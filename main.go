@@ -79,25 +79,6 @@ func main() {
 				context.JSON(http.StatusOK, todoList)
 			}
 		})
-		////查看具体
-		//v1Group.GET("/todo/:id", func(context *gin.Context) {
-		//	id, ok := context.Params.Get("id")
-		//	if !ok {
-		//		context.JSON(http.StatusOK, gin.H{
-		//			"error": "无效id",
-		//		})
-		//		return
-		//	}
-		//	var todo Todo
-		//	if err := DB.Where("id = ?", id).Find(&todo).Error; err != nil {
-		//		context.JSON(http.StatusOK, gin.H{
-		//			"error": err.Error(),
-		//		})
-		//		return
-		//	} else {
-		//		context.JSON(http.StatusOK, todo)
-		//	}
-		//})
 		//修改
 		v1Group.PUT("/todo/:id", func(context *gin.Context) {
 			//查库，对比权限 用户之类的，修改规则
