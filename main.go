@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"net/http"
@@ -28,7 +29,7 @@ func main() {
 		panic(err)
 	}
 	//5.延迟注册defer退出数据库
-	defer DB.Close()
+
 	//4.模型绑定
 	DB.AutoMigrate(&Todo{})
 
@@ -47,12 +48,11 @@ func main() {
 			//前端页面中填写待办事项，单击提交，将请求发送到这里来
 			//1.从请求中拿出数据
 			var todo Todo
-			context.BindJSON(&todo)
+			err := context.BindJSON(&todo)
+			if err != nil {
+				return
+			}
 			//2.存入数据库
-			//err := DB.Create(&todo).Error
-			//if err != nil {
-			//	panic(err)
-			//}
 			//3.返回响应
 			if err := DB.Create(&todo).Error; err != nil {
 				context.JSON(http.StatusOK, gin.H{ //响应成功，但操作失败，返回服务器繁忙，稍后重试
@@ -146,5 +146,5 @@ func initMysql() (err error) {
 	timeout := "10s"    //连接超时，10秒
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local&timeout=%s", username, password, host, port, Dbname, timeout)
 	DB, _ = gorm.Open("mysql", dsn)
-	return
+	return err
 }
